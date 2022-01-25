@@ -5,7 +5,7 @@ import justpy as jp
 
 
 def generate_report(sqlite):
-    wp = jp.WebPage()
+    wp = jp.WebPage(delete_flag=False)
     div_container = jp.Div(
         a=jp.Div(a=wp, classes="md:container md:mx-auto"),
         classes="min-h-screen flex flex-row bg-gray-100",
