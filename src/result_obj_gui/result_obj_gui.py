@@ -4,6 +4,9 @@ import argparse
 
 import justpy as jp
 
+from utils import str_from_ts
+from utils import html_from_ts
+
 
 def generate_report(sqlite_path):
     wp = jp.WebPage(delete_flag=False)
@@ -41,9 +44,19 @@ def _add_overview_section(div_content, db):
     metadata_start = metadata_list[0]
     metadata_end = metadata_list[-1]
 
+    start_ts = metadata_start['timestamp']
+    end_ts = metadata_end['timestamp']
     jp.P(
         a=section_overview,
-        text=f"Started: {metadata_start['timestamp']} Ended: {metadata_end['timestamp']}"
+        inner_html=f"Started: {html_from_ts(start_ts)}.",
+    )
+    jp.P(
+        a=section_overview,
+        inner_html=f"Ended: {html_from_ts(end_ts)}.",
+    )
+    jp.P(
+        a=section_overview,
+        inner_html=f"Duration: <em>{end_ts - start_ts:.2}</em> seconds.",
     )
 
     return section_overview
