@@ -1,18 +1,23 @@
 #! /usr/bin/env python3
+import sqlite3
 import argparse
 
 import justpy as jp
 
 
-def generate_report(sqlite):
+def generate_report(sqlite_path):
     wp = jp.WebPage(delete_flag=False)
     div_container = jp.Div(
         a=jp.Div(a=wp, classes="md:container md:mx-auto"),
         classes="min-h-screen flex flex-row bg-gray-100",
     )
 
-    div_content, sections = _generate_sections()
-    div_navigation = _add_navigation(sections)
+    db = sqlite3.connect(sqlite_path)
+    db.row_factory = sqlite3.Row
+
+    div_content = jp.Div(classes="p-3 w-full")
+    sections_iterator = _generate_sections(div_content, db)
+    div_navigation = _add_navigation(sections_iterator)
 
     div_container.add(div_navigation)
     div_container.add(div_content)
@@ -20,24 +25,28 @@ def generate_report(sqlite):
     return lambda: wp
 
 
-def _generate_sections():
-    div_content = jp.Div(classes="p-3")
-
+def _generate_sections(div_content, db):
     _add_title_section(div_content)
 
-    sections = []
+    yield _add_overview_section(div_content, db)
 
+
+def _add_overview_section(div_content, db):
     section_overview = _get_section(div_content, "Overview")
-    section_overview.add(
-        jp.P(
-            text="""Lorem ipsum dolor sit amet, consectetur adipisicing elit. Labore earum natus vel
-                    minima quod error maxime, molestias ut. Fuga dignissimos nisi nemo necessitatibus
-                    quisquam obcaecati et reiciendis quaerat accusamus numquam."""
-        )
-    )
-    sections.append(section_overview)
 
-    return div_content, sections
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM Metadata ORDER BY timestamp")
+    metadata_list = cursor.fetchall()
+
+    metadata_start = metadata_list[0]
+    metadata_end = metadata_list[-1]
+
+    jp.P(
+        a=section_overview,
+        text=f"Started: {metadata_start['timestamp']} Ended: {metadata_end['timestamp']}"
+    )
+
+    return section_overview
 
 
 def _add_title_section(div_content):
