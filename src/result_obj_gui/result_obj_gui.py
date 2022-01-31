@@ -58,6 +58,28 @@ def _add_overview_section(div_content, db):
         a=section_overview,
         inner_html=f"Duration: <em>{end_ts - start_ts:.2}</em> seconds.",
     )
+    jp.P(
+        a=section_overview,
+        text=f"Command: {metadata_start['argv']}",
+    )
+    jp.P(
+        a=section_overview,
+        text=f"Directory: {metadata_start['pwd']}",
+    )
+
+    cursor.execute("SELECT key, value FROM MetadataEnvVars ORDER BY key")
+    env_var_list = cursor.fetchall()
+
+    jp.P(
+        a=section_overview,
+        text=f"Env variables:",
+    )
+
+    table = jp.Table(a=section_overview)
+    for env_var in env_var_list:
+        tr = jp.Tr(a=table)
+        jp.Td(a=tr, text=env_var["key"])
+        jp.Td(a=tr, text=env_var["value"])
 
     return section_overview
 
