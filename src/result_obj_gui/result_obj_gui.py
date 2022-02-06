@@ -32,6 +32,18 @@ def _generate_sections(div_content, db):
     _add_title_section(div_content)
 
     yield _add_overview_section(div_content, db)
+    yield _add_metrics_section(div_content, db)
+    yield _add_status_section(div_content, db)
+    yield _add_restore_points_section(div_content, db)
+    yield _add_result_section(div_content, db)
+    yield _add_logs_section(div_content, db)
+
+
+def _add_title_section(div_content):
+    section_title = jp.Section(a=div_content)
+    h1 = jp.H1(a=section_title, classes="text-2xl p-4 text-center")
+    h1.add(jp.Code(text="result_obj"))
+    h1.add(jp.Span(text=" info"))
 
 
 def _add_overview_section(div_content, db):
@@ -70,9 +82,10 @@ def _add_overview_section(div_content, db):
     cursor.execute("SELECT key, value FROM MetadataEnvVars ORDER BY key")
     env_var_list = cursor.fetchall()
 
-    jp.P(
+    jp.H2(
         a=section_overview,
-        text=f"Env variables:",
+        text=f"Env variables",
+        classes="text-l font-semibold"
     )
 
     grid_options = """
@@ -102,11 +115,39 @@ def _add_overview_section(div_content, db):
     return section_overview
 
 
-def _add_title_section(div_content):
-    section_title = jp.Section(a=div_content)
-    h1 = jp.H1(a=section_title, classes="text-2xl p-4 text-center")
-    h1.add(jp.Code(text="result_obj"))
-    h1.add(jp.Span(text=" info"))
+def _add_metrics_section(div_content, db):
+    section_metrics = _get_section(div_content, "Metrics")
+
+
+    return section_metrics
+
+
+def _add_restore_points_section(div_content, db):
+    section_restore_points = _get_section(div_content, "Restore points")
+
+
+    return section_restore_points
+
+
+def _add_status_section(div_content, db):
+    section_status = _get_section(div_content, "Status messages")
+
+
+    return section_status
+
+
+def _add_result_section(div_content, db):
+    section_result = _get_section(div_content, "Result")
+
+
+    return section_result
+
+
+def _add_logs_section(div_content, db):
+    section_logs = _get_section(div_content, "Logs")
+
+
+    return section_logs
 
 
 def _get_section(div_content, name):
@@ -114,7 +155,7 @@ def _get_section(div_content, name):
     section = jp.Section(
         a=div_content,
         id=section_id,
-        classes="overflow-hidden rounded-lg shadow-md bg-white hover:shadow-xl transition-shadow duration-300 ease-in-out p-4",
+        classes="overflow-hidden rounded-lg shadow-md bg-white hover:shadow-xl transition-shadow duration-300 ease-in-out p-4 mt-4",
     )
     section.add(jp.H3(classes="text-xl font-semibold pb-3", text=name))
 
