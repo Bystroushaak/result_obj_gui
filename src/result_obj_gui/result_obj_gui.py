@@ -44,8 +44,8 @@ def _add_overview_section(div_content, db):
     metadata_start = metadata_list[0]
     metadata_end = metadata_list[-1]
 
-    start_ts = metadata_start['timestamp']
-    end_ts = metadata_end['timestamp']
+    start_ts = metadata_start["timestamp"]
+    end_ts = metadata_end["timestamp"]
     jp.P(
         a=section_overview,
         inner_html=f"Started: {html_from_ts(start_ts)}.",
@@ -75,11 +75,29 @@ def _add_overview_section(div_content, db):
         text=f"Env variables:",
     )
 
-    table = jp.Table(a=section_overview)
+    grid_options = """
+    {
+        defaultColDef: {
+            filter: true,
+            sortable: true,
+            resizable: true,
+            headerClass: 'font-bold',
+            wrapText: true
+        },
+        columnDefs: [
+          {headerName: "Name", field: "key"},
+          {headerName: "Value", field: "value", minWidth: 1050, autoHeight: true, editable: true}
+        ],
+        rowHeight: 120,
+        rowData: []
+    }
+    """
+    table = jp.AgGrid(
+        a=section_overview, options=grid_options, style="height: 400px; margin: 0.25em"
+    )
+    table.options.columnDefs[1].cellStyle = "white-space: normal;"
     for env_var in env_var_list:
-        tr = jp.Tr(a=table)
-        jp.Td(a=tr, text=env_var["key"])
-        jp.Td(a=tr, text=env_var["value"])
+        table.options.rowData.append({"key": env_var["key"], "value": env_var["value"]})
 
     return section_overview
 
