@@ -6,6 +6,7 @@ import justpy as jp
 
 from utils import str_from_ts
 from utils import html_from_ts
+from utils import iso_str_from_ts
 
 
 def generate_report(sqlite_path):
@@ -82,11 +83,7 @@ def _add_overview_section(div_content, db):
     cursor.execute("SELECT key, value FROM MetadataEnvVars ORDER BY key")
     env_var_list = cursor.fetchall()
 
-    jp.H2(
-        a=section_overview,
-        text=f"Env variables",
-        classes="text-l font-semibold"
-    )
+    jp.H2(a=section_overview, text=f"Env variables", classes="text-l font-semibold")
 
     grid_options = """
     {
@@ -118,13 +115,11 @@ def _add_overview_section(div_content, db):
 def _add_metrics_section(div_content, db):
     section_metrics = _get_section(div_content, "Metrics")
 
-
     return section_metrics
 
 
 def _add_restore_points_section(div_content, db):
     section_restore_points = _get_section(div_content, "Restore points")
-
 
     return section_restore_points
 
@@ -132,6 +127,44 @@ def _add_restore_points_section(div_content, db):
 def _add_status_section(div_content, db):
     section_status = _get_section(div_content, "Status messages")
 
+    cursor = db.cursor()
+    cursor.execute("SELECT timestamp, status FROM StatusHistory ORDER BY timestamp")
+    status_list = cursor.fetchall()
+
+    if not status_list:
+        return None
+
+    table_options = {
+        "defaultColDef": {
+            "filter": True,
+            "sortable": True,
+            "resizable": True,
+            "headerClass": "font-bold",
+            "wrapText": True,
+        },
+        "columnDefs": [
+            {"headerName": "Time", "field": "time"},
+            {
+                "headerName": "Status",
+                "field": "status",
+                "minWidth": 1050,
+                "autoHeight": True,
+                "editable": True,
+            },
+        ],
+        "rowHeight": 120,
+        "rowData": [],
+    }
+    table = jp.AgGrid(
+        a=section_status, options=table_options, style="height: 400px; margin: 0.25em"
+    )
+    for status_data in status_list:
+        table.options.rowData.append(
+            {
+                "time": iso_str_from_ts(status_data["timestamp"]),
+                "status": status_data["status"],
+            }
+        )
 
     return section_status
 
@@ -139,13 +172,11 @@ def _add_status_section(div_content, db):
 def _add_result_section(div_content, db):
     section_result = _get_section(div_content, "Result")
 
-
     return section_result
 
 
 def _add_logs_section(div_content, db):
     section_logs = _get_section(div_content, "Logs")
-
 
     return section_logs
 
@@ -172,6 +203,9 @@ def _add_navigation(items):
     ul = jp.Ul(a=div_ul_container, classes="nav")
 
     for section in items:
+        if not section:
+            continue
+
         link = "#" + section.id
         name = section.components[0].text
 
