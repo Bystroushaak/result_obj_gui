@@ -85,25 +85,29 @@ def _add_overview_section(div_content, db):
 
     jp.H2(a=section_overview, text=f"Env variables", classes="text-l font-semibold")
 
-    grid_options = """
-    {
-        defaultColDef: {
-            filter: true,
-            sortable: true,
-            resizable: true,
-            headerClass: 'font-bold',
-            wrapText: true
+    table_options = {
+        "defaultColDef": {
+            "filter": True,
+            "sortable": True,
+            "resizable": True,
+            "headerClass": "font-bold",
+            "wrapText": True,
         },
-        columnDefs: [
-          {headerName: "Name", field: "key"},
-          {headerName: "Value", field: "value", minWidth: 1050, autoHeight: true, editable: true}
+        "columnDefs": [
+            {"headerName": "Name", "field": "key"},
+            {
+                "headerName": "Value",
+                "field": "value",
+                "minWidth": 1050,
+                "autoHeight": True,
+                "editable": True,
+            },
         ],
-        rowHeight: 120,
-        rowData: []
+        "rowHeight": 120,
+        "rowData": [],
     }
-    """
     table = jp.AgGrid(
-        a=section_overview, options=grid_options, style="height: 400px; margin: 0.25em"
+        a=section_overview, options=table_options, style="height: 400px; margin: 0.25em"
     )
     table.options.columnDefs[1].cellStyle = "white-space: normal;"
     for env_var in env_var_list:
