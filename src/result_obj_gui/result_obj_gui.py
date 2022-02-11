@@ -48,7 +48,7 @@ def _add_title_section(div_content):
 
 
 def _add_overview_section(div_content, db):
-    section_overview = _get_section(div_content, "Overview")
+    section_overview = _create_section(div_content, "Overview")
 
     cursor = db.cursor()
     cursor.execute("SELECT * FROM Metadata ORDER BY timestamp")
@@ -117,13 +117,13 @@ def _add_overview_section(div_content, db):
 
 
 def _add_metrics_section(div_content, db):
-    section_metrics = _get_section(div_content, "Metrics")
+    section_metrics = _create_section(div_content, "Metrics")
 
     return section_metrics
 
 
 def _add_status_section(div_content, db):
-    section_status = _get_section(div_content, "Status messages")
+    section_status = _create_section(div_content, "Status messages")
 
     cursor = db.cursor()
     cursor.execute("SELECT timestamp, status FROM StatusHistory ORDER BY timestamp")
@@ -172,19 +172,19 @@ def _add_status_section(div_content, db):
 
 
 def _add_restore_points_section(div_content, db):
-    section_restore_points = _get_section(div_content, "Restore points")
+    section_restore_points = _create_section(div_content, "Restore points")
 
     return section_restore_points
 
 
 def _add_result_section(div_content, db):
-    section_result = _get_section(div_content, "Result")
+    section_result = _create_section(div_content, "Result")
 
     return section_result
 
 
 def _add_logs_section(div_content, db):
-    section_logs = _get_section(div_content, "Logs")
+    section_logs = _create_section(div_content, "Logs")
 
     cursor = db.cursor()
     cursor.execute("SELECT * FROM Logs ORDER BY created")
@@ -255,7 +255,7 @@ def _add_logs_section(div_content, db):
     return section_logs
 
 
-def _get_section(div_content, name):
+def _create_section(div_content, name):
     section_id = name.replace(" ", "-")
     section = jp.Section(
         a=div_content,
