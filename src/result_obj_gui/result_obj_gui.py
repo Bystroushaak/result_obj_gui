@@ -138,6 +138,10 @@ def _add_status_section(div_content, db):
     if not status_list:
         return None
 
+    height = 400
+    if len(status_list) > 15:
+        height = 1200
+
     table_options = {
         "defaultColDef": {
             "filter": True,
@@ -160,7 +164,7 @@ def _add_status_section(div_content, db):
         "rowData": [],
     }
     table = jp.AgGrid(
-        a=section_status, options=table_options, style="height: 400px; margin: 0.25em"
+        a=section_status, options=table_options, style=f"height: {height}px; margin: 0.25em"
     )
     for status_data in status_list:
         table.options.rowData.append(
