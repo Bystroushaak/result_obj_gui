@@ -182,6 +182,72 @@ def _add_result_section(div_content, db):
 def _add_logs_section(div_content, db):
     section_logs = _get_section(div_content, "Logs")
 
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM Logs ORDER BY created")
+    logs_list = cursor.fetchall()
+
+    if not logs_list:
+        return None
+
+    table_options = {
+        "defaultColDef": {
+            "filter": True,
+            "sortable": True,
+            "resizable": True,
+            "headerClass": "font-bold",
+            "wrapText": True,
+        },
+        "columnDefs": [
+            {"headerName": "Created", "field": "created"},
+            {"headerName": "Level", "field": "levelname"},
+            {
+                "headerName": "Message",
+                "field": "msg",
+                # "minWidth": 1050,
+                "autoHeight": True,
+                "editable": True,
+            },
+            {"headerName": "Filename", "field": "filename"},
+            {"headerName": "Line", "field": "lineno"},
+            {"headerName": "Function", "field": "funcname"},
+            {"headerName": "Name", "field": "name"},
+            {"headerName": "Module", "field": "module"},
+            {"headerName": "Path", "field": "pathname"},
+            {"headerName": "Process", "field": "process"},
+            {"headerName": "Process name", "field": "processName"},
+            {"headerName": "Thread ID", "field": "thread"},
+            {"headerName": "Thread name", "field": "threadName"},
+        ],
+        "rowHeight": 120,
+        "rowData": []
+    }
+
+    height = 400
+    if len(logs_list) > 15:
+        height = 1200
+
+    table = jp.AgGrid(
+        a=section_logs, options=table_options, style=f"height: {height}px; margin: 0.25em"
+    )
+    for log in logs_list:
+        table.options.rowData.append(
+            {
+                "created": iso_str_from_ts(log["created"]),
+                "levelname": log["levelname"],
+                "msg": log["msg"],
+                "filename": log["filename"],
+                "lineno": log["lineno"],
+                "funcname": log["funcName"],
+                "module": log["module"],
+                "name": log["name"],
+                "pathname": log["pathname"],
+                "process": log["process"],
+                "processName": log["processName"],
+                "thread": log["thread"],
+                "threadName": log["threadName"],
+            }
+        )
+
     return section_logs
 
 
