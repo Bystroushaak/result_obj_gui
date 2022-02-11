@@ -122,12 +122,6 @@ def _add_metrics_section(div_content, db):
     return section_metrics
 
 
-def _add_restore_points_section(div_content, db):
-    section_restore_points = _get_section(div_content, "Restore points")
-
-    return section_restore_points
-
-
 def _add_status_section(div_content, db):
     section_status = _get_section(div_content, "Status messages")
 
@@ -175,6 +169,12 @@ def _add_status_section(div_content, db):
         )
 
     return section_status
+
+
+def _add_restore_points_section(div_content, db):
+    section_restore_points = _get_section(div_content, "Restore points")
+
+    return section_restore_points
 
 
 def _add_result_section(div_content, db):
