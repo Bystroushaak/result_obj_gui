@@ -27,3 +27,15 @@ def html_from_ts(ts):
     iso_str = local_tz_dt.isoformat()
 
     return f'<em title="{iso_str}">{short_str[:-4]}</em>'
+
+
+def bytes_to_readable_str(size):
+    for unit in ["B", "KiB", "MiB", "GiB", "TiB"]:
+        if size < 1024.0:
+            if unit == "B":
+                return "%d %s" % (size, unit)
+            return "%3.1f %s" % (size, unit)
+
+        size /= 1024.0
+
+    return size

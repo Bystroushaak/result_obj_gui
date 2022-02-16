@@ -7,6 +7,7 @@ import justpy as jp
 from utils import str_from_ts
 from utils import html_from_ts
 from utils import iso_str_from_ts
+from utils import bytes_to_readable_str
 
 
 def generate_report(sqlite_path):
@@ -181,6 +182,24 @@ def _add_restore_points_section(div_content, db):
 
 def _add_result_section(div_content, db):
     section_result = _create_section(div_content, "Result")
+
+    cursor = db.cursor()
+    cursor.execute("SELECT timestamp, type, result FROM Result")
+    result = cursor.fetchone()
+
+    if not result:
+        return None
+
+    jp.P(a=section_result, inner_html=f"Result added: {html_from_ts(result['timestamp'])}")
+    jp.P(a=section_result, inner_html=f"Result type: {result['type']}")
+
+    result_len = len(result["result"])
+    result_size = bytes_to_readable_str(result_len)
+    jp.P(a=section_result, inner_html=f"Result size: {result_size}")
+
+    if result_len < 1024 or result['type'] != "cpython_pickle":  # TODO: convert to enum later
+        jp.P(a=section_result, text="Raw result:")
+        jp.P(a=section_result, text=result["result"])
 
     return section_result
 
