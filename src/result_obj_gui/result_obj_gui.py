@@ -161,7 +161,9 @@ def _add_status_section(div_content, db):
         "paginationPageSize": 40,
     }
     table = jp.AgGrid(
-        a=section_status, options=table_options, style=f"height: {height}px; margin: 0.25em"
+        a=section_status,
+        options=table_options,
+        style=f"height: {height}px; margin: 0.25em",
     )
     for status_data in status_list:
         table.options.rowData.append(
@@ -271,7 +273,7 @@ def _add_logs_section(div_content, db):
         "rowHeight": 120,
         "pagination": True,
         "paginationPageSize": 40,
-        "rowData": []
+        "rowData": [],
     }
 
     height = 400
@@ -279,7 +281,9 @@ def _add_logs_section(div_content, db):
         height = 1200
 
     table = jp.AgGrid(
-        a=section_logs, options=table_options, style=f"height: {height}px; margin: 0.25em"
+        a=section_logs,
+        options=table_options,
+        style=f"height: {height}px; margin: 0.25em",
     )
     for log in logs_list:
         table.options.rowData.append(
