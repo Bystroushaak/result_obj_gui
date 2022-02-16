@@ -156,6 +156,8 @@ def _add_status_section(div_content, db):
         ],
         "rowHeight": 120,
         "rowData": [],
+        "pagination": True,
+        "paginationPageSize": 40,
     }
     table = jp.AgGrid(
         a=section_status, options=table_options, style=f"height: {height}px; margin: 0.25em"
@@ -223,6 +225,8 @@ def _add_logs_section(div_content, db):
             {"headerName": "Thread name", "field": "threadName"},
         ],
         "rowHeight": 120,
+        "pagination": True,
+        "paginationPageSize": 40,
         "rowData": []
     }
 
