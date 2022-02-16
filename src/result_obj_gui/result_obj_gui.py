@@ -177,6 +177,24 @@ def _add_status_section(div_content, db):
 def _add_restore_points_section(div_content, db):
     section_restore_points = _create_section(div_content, "Restore points")
 
+    cursor = db.cursor()
+    cursor.execute("SELECT timestamp, type, restore_data FROM RestorePoint")
+    restore_points = cursor.fetchall()
+
+    if not restore_points:
+        return None
+
+    for cnt, rp in enumerate(restore_points):
+        _read_pickled_obj_info(
+            section_restore_points,
+            "Restore point",
+            rp["timestamp"],
+            rp["type"],
+            rp["restore_data"],
+        )
+        if cnt < len(restore_points) - 1:
+            jp.P(a=section_restore_points, inner_html="&nbsp;")
+
     return section_restore_points
 
 
