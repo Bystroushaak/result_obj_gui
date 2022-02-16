@@ -190,18 +190,25 @@ def _add_result_section(div_content, db):
     if not result:
         return None
 
-    jp.P(a=section_result, inner_html=f"Result added: {html_from_ts(result['timestamp'])}")
-    jp.P(a=section_result, inner_html=f"Result type: {result['type']}")
-
-    result_len = len(result["result"])
-    result_size = bytes_to_readable_str(result_len)
-    jp.P(a=section_result, inner_html=f"Result size: {result_size}")
-
-    if result_len < 1024 or result['type'] != "cpython_pickle":  # TODO: convert to enum later
-        jp.P(a=section_result, text="Raw result:")
-        jp.P(a=section_result, text=result["result"])
+    _read_pickled_obj_info(
+        section_result, "Result", result["timestamp"], result["type"], result["result"]
+    )
 
     return section_result
+
+
+def _read_pickled_obj_info(section, name, added, data_type, data):
+    jp.P(a=section, inner_html=f"{name} stored: {html_from_ts(added)}")
+    jp.P(a=section, inner_html=f"{name} type: {data_type}")
+
+    result_len = len(data)
+    result_size = bytes_to_readable_str(result_len)
+    jp.P(a=section, inner_html=f"{name} size: {result_size}")
+
+    # TODO: convert to enum later
+    if result_len < 1024 or data_type != "cpython_pickle":
+        jp.P(a=section, text="Raw data:")
+        jp.P(a=section, text=data)
 
 
 def _add_logs_section(div_content, db):
