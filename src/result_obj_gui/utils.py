@@ -1,6 +1,7 @@
 from datetime import datetime
 from datetime import timezone
 
+import justpy as jp
 
 LOCAL_TIMEZONE = datetime.now(timezone.utc).astimezone().tzinfo
 
@@ -39,3 +40,15 @@ def bytes_to_readable_str(size):
         size /= 1024.0
 
     return size
+
+
+def _create_section(div_content, name):
+    section_id = name.replace(" ", "-")
+    section = jp.Section(
+        a=div_content,
+        id=section_id,
+        classes="overflow-hidden rounded-lg shadow-md bg-white hover:shadow-xl transition-shadow duration-300 ease-in-out p-4 mt-4",
+    )
+    section.add(jp.H3(classes="text-xl font-semibold pb-3", text=name))
+
+    return section
