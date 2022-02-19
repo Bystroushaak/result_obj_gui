@@ -1,4 +1,5 @@
 #! /usr/bin/env python3
+import os.path
 import sqlite3
 import argparse
 
@@ -21,11 +22,8 @@ def generate_report(sqlite_path):
         classes="min-h-screen flex flex-row bg-gray-100",
     )
 
-    db = sqlite3.connect(sqlite_path)
-    db.row_factory = sqlite3.Row
-
     div_content = jp.Div(classes="p-3 w-full")
-    sections_iterator = _generate_sections(div_content, db)
+    sections_iterator = _generate_sections(div_content, sqlite_path)
     div_navigation = _add_navigation(sections_iterator)
 
     div_container.add(div_navigation)
@@ -34,26 +32,36 @@ def generate_report(sqlite_path):
     return lambda: wp
 
 
-def _generate_sections(div_content, db):
+def _generate_sections(div_content, sqlite_path):
     _add_title_section(div_content)
 
-    yield _add_overview_section(div_content, db)
-    yield add_metrics_section(div_content, db)
+    db = sqlite3.connect(sqlite_path)
+    db.row_factory = sqlite3.Row
+
+    yield _add_overview_section(div_content, db, sqlite_path)
     yield _add_status_section(div_content, db)
     yield _add_restore_points_section(div_content, db)
     yield _add_result_section(div_content, db)
     yield _add_logs_section(div_content, db)
+    yield add_metrics_section(div_content, db)
 
 
 def _add_title_section(div_content):
     section_title = jp.Section(a=div_content)
-    h1 = jp.H1(a=section_title, classes="text-2xl p-4 text-center")
+    h1 = jp.H1(a=section_title, classes="text-2xl pt-4 text-center")
     h1.add(jp.Code(text="result_obj"))
     h1.add(jp.Span(text=" info"))
 
 
-def _add_overview_section(div_content, db):
+def _add_overview_section(div_content, db, sqlite_path):
     section_overview = _create_section(div_content, "Overview")
+
+    jp.H2(a=section_overview, text="Analyzed file", classes="text-xl font-semibold")
+    sqlite_size = os.path.getsize(sqlite_path)
+    jp.P(
+        a=section_overview,
+        inner_html=f"<code>{os.path.abspath(sqlite_path)}</code> ({bytes_to_readable_str(sqlite_size)})",
+    )
 
     cursor = db.cursor()
     cursor.execute("SELECT * FROM Metadata ORDER BY timestamp")
@@ -65,7 +73,7 @@ def _add_overview_section(div_content, db):
     start_ts = metadata_start["timestamp"]
     end_ts = metadata_end["timestamp"]
 
-    jp.H2(a=section_overview, text="Started", classes="text-xl font-semibold")
+    jp.H2(a=section_overview, text="Started", classes="text-xl font-semibold pt-3")
     jp.P(
         a=section_overview,
         inner_html=f"{html_from_ts(start_ts)}",
