@@ -86,19 +86,21 @@ def _add_overview_section(div_content, db):
     jp.H2(a=section_overview, text="sys.argv", classes="text-xl font-semibold pt-3")
     jp.Code(
         a=section_overview,
-        text=metadata_start['argv'],
+        text=metadata_start["argv"],
     )
 
     jp.H2(a=section_overview, text=f"Directory", classes="text-xl font-semibold pt-3")
     jp.Code(
         a=section_overview,
-        text=metadata_start['pwd'],
+        text=metadata_start["pwd"],
     )
 
     cursor.execute("SELECT key, value FROM MetadataEnvVars ORDER BY key")
     env_var_list = cursor.fetchall()
 
-    jp.H2(a=section_overview, text=f"Env variables", classes="text-xl font-semibold pt-3")
+    jp.H2(
+        a=section_overview, text=f"Env variables", classes="text-xl font-semibold pt-3"
+    )
 
     table_height = 400
     if len(env_var_list) > 15:
@@ -126,7 +128,9 @@ def _add_overview_section(div_content, db):
         "rowData": [],
     }
     table = jp.AgGrid(
-        a=section_overview, options=table_options, style=f"height: {table_height}px; margin: 0.25em"
+        a=section_overview,
+        options=table_options,
+        style=f"height: {table_height}px; margin: 0.25em",
     )
     table.options.columnDefs[1].cellStyle = "white-space: normal;"
     for env_var in env_var_list:

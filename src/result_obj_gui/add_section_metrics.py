@@ -46,12 +46,11 @@ def _read_metrics(db, metric_name, metric_type):
     if metric_type == Metric.TYPE_START:
         cursor.execute(
             "SELECT * FROM Metrics WHERE name=? AND (type=? OR type=?)",
-            (metric_name, Metric.TYPE_START, Metric.TYPE_STOP)
+            (metric_name, Metric.TYPE_START, Metric.TYPE_STOP),
         )
     else:
         cursor.execute(
-            "SELECT * FROM Metrics WHERE name=? AND type=?",
-            (metric_name, metric_type)
+            "SELECT * FROM Metrics WHERE name=? AND type=?", (metric_name, metric_type)
         )
 
     empty_dict = {}
@@ -69,23 +68,12 @@ def _add_chart_values(metric_data, metric_name, section_metrics):
         x_axis.append(metric_info.value)
 
     my_chart_def = {
-        "title": {
-            "text": metric_name
-        },
-        "xAxis": {
-            "type": 'datetime'
-        },
-        "yAxis": {
-            "title": {
-                "text": 'Value'
-            }
-        },
-        "series": [{
-            "name": 'Numeric value',
-            "data": list(zip(y_axis, x_axis))
-        }]
+        "title": {"text": metric_name},
+        "xAxis": {"type": "datetime"},
+        "yAxis": {"title": {"text": "Value"}},
+        "series": [{"name": "Numeric value", "data": list(zip(y_axis, x_axis))}],
     }
-    my_chart = jp.HighCharts(a=section_metrics, classes='m-2 p-2 border')
+    my_chart = jp.HighCharts(a=section_metrics, classes="m-2 p-2 border")
     my_chart.options = my_chart_def
 
 
@@ -99,23 +87,12 @@ def _add_chart_counter(metric_data, metric_name, section_metrics):
         counter += 1
 
     my_chart_def = {
-        "title": {
-            "text": metric_name
-        },
-        "xAxis": {
-            "type": 'datetime'
-        },
-        "yAxis": {
-            "title": {
-                "text": 'Hits'
-            }
-        },
-        "series": [{
-            "name": 'Hit increment',
-            "data": list(zip(y_axis, x_axis))
-        }]
+        "title": {"text": metric_name},
+        "xAxis": {"type": "datetime"},
+        "yAxis": {"title": {"text": "Hits"}},
+        "series": [{"name": "Hit increment", "data": list(zip(y_axis, x_axis))}],
     }
-    my_chart = jp.HighCharts(a=section_metrics, classes='m-2 p-2 border')
+    my_chart = jp.HighCharts(a=section_metrics, classes="m-2 p-2 border")
     my_chart.options = my_chart_def
 
 
@@ -147,21 +124,12 @@ def _add_chart_start_stop(metric_data, metric_name, section_metrics):
         y_axis.append(metric_info.timestamp * 1000)
 
     my_chart_def = {
-        "title": {
-            "text": metric_name
-        },
-        "xAxis": {
-            "type": 'datetime'
-        },
-        "yAxis": {
-            "title": {
-                "text": 'Seconds'
-            }
-        },
-        "series": [{
-            "name": 'How long the start/stop took',
-            "data": list(zip(y_axis, x_axis))
-        }]
+        "title": {"text": metric_name},
+        "xAxis": {"type": "datetime"},
+        "yAxis": {"title": {"text": "Seconds"}},
+        "series": [
+            {"name": "How long the start/stop took", "data": list(zip(y_axis, x_axis))}
+        ],
     }
-    my_chart = jp.HighCharts(a=section_metrics, classes='m-2 p-2 border')
+    my_chart = jp.HighCharts(a=section_metrics, classes="m-2 p-2 border")
     my_chart.options = my_chart_def
