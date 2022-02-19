@@ -42,6 +42,10 @@ def bytes_to_readable_str(size):
     return size
 
 
+def bytes_to_gb(size):
+    return size / 1024.0 / 1024.0 / 1024.0
+
+
 def _create_section(div_content, name):
     section_id = name.replace(" ", "-")
     section = jp.Section(
