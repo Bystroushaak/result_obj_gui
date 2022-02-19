@@ -177,23 +177,29 @@ def _add_metrics_section(div_content, db):
 def _add_chart_start_stop(metric_data, metric_name, section_metrics):
     y_axis = []
     x_axis = []
-    for metric_info in sorted(metric_data, key=lambda x: x.timestamp):
+    start_ts = None
+    for cnt, metric_info in enumerate(sorted(metric_data, key=lambda x: x.timestamp)):
         # make zero the default
-        y_axis.append(metric_info.timestamp * 1000 - 1)
-        x_axis.append(0)
-
-        y_axis.append(metric_info.timestamp * 1000)
+        if cnt == 0:
+            y_axis.append(metric_info.timestamp * 1000 - 1)
+            x_axis.append(0)
 
         if metric_info.type == Metric.TYPE_START:
             x_axis.append(metric_info.timestamp)
+            start_ts = metric_info.timestamp
         else:
-            time_diff = metric_info.timestamp - x_axis[-1]
+            if not x_axis:  # prevent showing stop metric before start
+                continue
+
+            time_diff = metric_info.timestamp - start_ts
             x_axis[-1] = time_diff
             x_axis.append(time_diff)
 
             # default back to zero
-            y_axis.append(metric_info.timestamp * 1000 - 1)
+            y_axis.append(metric_info.timestamp * 1000 + 1)
             x_axis.append(0)
+
+        y_axis.append(metric_info.timestamp * 1000)
 
     my_chart_def = {
         "title": {
@@ -204,7 +210,7 @@ def _add_chart_start_stop(metric_data, metric_name, section_metrics):
         },
         "yAxis": {
             "title": {
-                "text": 'Start/Stop'
+                "text": 'Seconds'
             }
         },
         "series": [{
@@ -234,11 +240,11 @@ def _add_chart_counter(metric_data, metric_name, section_metrics):
         },
         "yAxis": {
             "title": {
-                "text": 'Value'
+                "text": 'Hits'
             }
         },
         "series": [{
-            "name": 'Value',
+            "name": 'Hit increment',
             "data": list(zip(y_axis, x_axis))
         }]
     }
@@ -262,11 +268,11 @@ def _add_chart_values(metric_data, metric_name, section_metrics):
         },
         "yAxis": {
             "title": {
-                "text": 'Hits'
+                "text": 'Value'
             }
         },
         "series": [{
-            "name": 'counter',
+            "name": 'Numeric value',
             "data": list(zip(y_axis, x_axis))
         }]
     }
