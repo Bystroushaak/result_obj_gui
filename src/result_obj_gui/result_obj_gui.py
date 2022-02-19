@@ -6,6 +6,7 @@ import justpy as jp
 
 from result_obj.metrics import Metric
 from result_obj.metrics import MetricInfo
+from result_obj.result_obj import DataTypes
 
 from utils import str_from_ts
 from utils import html_from_ts
@@ -344,7 +345,7 @@ def _add_restore_points_section(div_content, db):
         return None
 
     for cnt, rp in enumerate(restore_points):
-        _read_pickled_obj_info(
+        _display_pickled_obj_info(
             section_restore_points,
             "Restore point",
             rp["timestamp"],
@@ -367,14 +368,14 @@ def _add_result_section(div_content, db):
     if not result:
         return None
 
-    _read_pickled_obj_info(
+    _display_pickled_obj_info(
         section_result, "Result", result["timestamp"], result["type"], result["result"]
     )
 
     return section_result
 
 
-def _read_pickled_obj_info(section, name, added, data_type, data):
+def _display_pickled_obj_info(section, name, added, data_type, data):
     jp.P(a=section, inner_html=f"{name} stored: {html_from_ts(added)}")
     jp.P(a=section, inner_html=f"{name} type: {data_type}")
 
@@ -382,8 +383,7 @@ def _read_pickled_obj_info(section, name, added, data_type, data):
     result_size = bytes_to_readable_str(result_len)
     jp.P(a=section, inner_html=f"{name} size: {result_size}")
 
-    # TODO: convert to enum later
-    if result_len < 1024 or data_type != "cpython_pickle":
+    if result_len < 1024 or data_type != DataTypes.pickle:
         jp.P(a=section, text="Raw data:")
         jp.P(a=section, text=data)
 
