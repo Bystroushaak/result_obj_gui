@@ -84,7 +84,7 @@ def _add_overview_section(div_content, db):
     )
 
     jp.H2(a=section_overview, text="sys.argv", classes="text-xl font-semibold pt-3")
-    jp.P(
+    jp.Code(
         a=section_overview,
         text=metadata_start['argv'],
     )
