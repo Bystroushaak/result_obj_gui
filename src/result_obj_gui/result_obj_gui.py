@@ -214,7 +214,7 @@ def _add_chart_start_stop(metric_data, metric_name, section_metrics):
             }
         },
         "series": [{
-            "name": 'Value',
+            "name": 'How long the start/stop took',
             "data": list(zip(y_axis, x_axis))
         }]
     }
