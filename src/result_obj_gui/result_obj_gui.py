@@ -64,31 +64,45 @@ def _add_overview_section(div_content, db):
 
     start_ts = metadata_start["timestamp"]
     end_ts = metadata_end["timestamp"]
+
+    jp.H2(a=section_overview, text="Started", classes="text-xl font-semibold")
     jp.P(
         a=section_overview,
-        inner_html=f"Started: {html_from_ts(start_ts)}.",
+        inner_html=f"{html_from_ts(start_ts)}",
     )
+
+    jp.H2(a=section_overview, text="Stopped", classes="text-xl font-semibold pt-3")
     jp.P(
         a=section_overview,
-        inner_html=f"Ended: {html_from_ts(end_ts)}.",
+        inner_html=f"{html_from_ts(end_ts)}",
     )
+
+    jp.H2(a=section_overview, text="Duration", classes="text-xl font-semibold pt-3")
     jp.P(
         a=section_overview,
-        inner_html=f"Duration: <em>{end_ts - start_ts:.2}</em> seconds.",
+        inner_html=f"<em>{end_ts - start_ts:.2}</em> seconds.",
     )
+
+    jp.H2(a=section_overview, text="sys.argv", classes="text-xl font-semibold pt-3")
     jp.P(
         a=section_overview,
-        text=f"Command: {metadata_start['argv']}",
+        text=metadata_start['argv'],
     )
-    jp.P(
+
+    jp.H2(a=section_overview, text=f"Directory", classes="text-xl font-semibold pt-3")
+    jp.Code(
         a=section_overview,
-        text=f"Directory: {metadata_start['pwd']}",
+        text=metadata_start['pwd'],
     )
 
     cursor.execute("SELECT key, value FROM MetadataEnvVars ORDER BY key")
     env_var_list = cursor.fetchall()
 
-    jp.H2(a=section_overview, text=f"Env variables", classes="text-l font-semibold")
+    jp.H2(a=section_overview, text=f"Env variables", classes="text-xl font-semibold pt-3")
+
+    table_height = 400
+    if len(env_var_list) > 15:
+        table_height = 1200
 
     table_options = {
         "defaultColDef": {
@@ -112,7 +126,7 @@ def _add_overview_section(div_content, db):
         "rowData": [],
     }
     table = jp.AgGrid(
-        a=section_overview, options=table_options, style="height: 400px; margin: 0.25em"
+        a=section_overview, options=table_options, style=f"height: {table_height}px; margin: 0.25em"
     )
     table.options.columnDefs[1].cellStyle = "white-space: normal;"
     for env_var in env_var_list:

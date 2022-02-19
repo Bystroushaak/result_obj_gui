@@ -49,6 +49,6 @@ def _create_section(div_content, name):
         id=section_id,
         classes="overflow-hidden rounded-lg shadow-md bg-white hover:shadow-xl transition-shadow duration-300 ease-in-out p-4 mt-4",
     )
-    section.add(jp.H3(classes="text-xl font-semibold pb-3", text=name))
+    section.add(jp.H3(classes="text-2xl font-semibold pb-3", text=name))
 
     return section
