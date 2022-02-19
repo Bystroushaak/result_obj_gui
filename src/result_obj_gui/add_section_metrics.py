@@ -5,10 +5,75 @@ from result_obj.metrics import MetricInfo
 
 from utils import bytes_to_gb
 from utils import _create_section
-from utils import bytes_to_readable_str
 
 
-def add_metrics_section(div_content, db):
+synchronize_cursors_js = """
+['mousemove', 'touchmove', 'touchstart'].forEach(function (eventType) {
+    document.getElementById('Metrics').addEventListener(
+        eventType,
+        function (e) {
+            var chart,
+                point,
+                i,
+                event;
+
+            for (i = 0; i < Highcharts.charts.length; i = i + 1) {
+                chart = Highcharts.charts[i];
+                // Find coordinates within the chart
+                event = chart.pointer.normalize(e);
+                // Get the hovered point
+                point = chart.series[0].searchPoint(event, true);
+
+                if (point) {
+                    point.highlight(e);
+                }
+            }
+        }
+    );
+});
+
+Highcharts.Pointer.prototype.reset = function () {
+    return undefined;
+};
+
+Highcharts.Point.prototype.highlight = function (event) {
+    event = this.series.chart.pointer.normalize(event);
+    this.onMouseOver(); // Show the hover marker
+    this.series.chart.tooltip.refresh(this); // Show the tooltip
+    this.series.chart.xAxis[0].drawCrosshair(event, this); // Show the crosshair
+};
+
+function syncExtremes(e) {
+    var thisChart = this.chart;
+
+    if (e.trigger !== 'syncExtremes') { // Prevent feedback loop
+        Highcharts.each(Highcharts.charts, function (chart) {
+            if (chart !== thisChart) {
+                if (chart.xAxis[0].setExtremes) { // It is null while updating
+                    chart.xAxis[0].setExtremes(
+                        e.min,
+                        e.max,
+                        undefined,
+                        false,
+                        { trigger: 'syncExtremes' }
+                    );
+                }
+            }
+        });
+    }
+}
+"""
+
+
+async def synchronize_cursors(self, msg):
+    jp.run_task(
+        self.run_javascript(
+            synchronize_cursors_js, request_id="geo_location", send=False
+        )
+    )
+
+
+def add_metrics_section(div_content, wp, db):
     section_metrics = _create_section(div_content, "Metrics")
 
     cursor = db.cursor()
@@ -17,6 +82,8 @@ def add_metrics_section(div_content, db):
 
     if not metrics_list:
         return None
+
+    wp.on("synchronize_cursors", synchronize_cursors)
 
     metric_names = {x["name"] for x in metrics_list}
 

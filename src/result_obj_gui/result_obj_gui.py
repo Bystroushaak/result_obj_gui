@@ -23,7 +23,7 @@ def generate_report(sqlite_path):
     )
 
     div_content = jp.Div(classes="p-3 w-full")
-    sections_iterator = _generate_sections(div_content, sqlite_path)
+    sections_iterator = _generate_sections(div_content, wp, sqlite_path)
     div_navigation = _add_navigation(sections_iterator)
 
     div_container.add(div_navigation)
@@ -32,7 +32,7 @@ def generate_report(sqlite_path):
     return lambda: wp
 
 
-def _generate_sections(div_content, sqlite_path):
+def _generate_sections(div_content, wp, sqlite_path):
     _add_title_section(div_content)
 
     db = sqlite3.connect(sqlite_path)
@@ -43,7 +43,7 @@ def _generate_sections(div_content, sqlite_path):
     yield _add_restore_points_section(div_content, db)
     yield _add_result_section(div_content, db)
     yield _add_logs_section(div_content, db)
-    yield add_metrics_section(div_content, db)
+    yield add_metrics_section(div_content, wp, db)
 
 
 def _add_title_section(div_content):
